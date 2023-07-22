@@ -8,7 +8,8 @@ const ForbiddenError = require('../errors/forbiddenError');
 const { OK_CODE } = require('../utils/constants');
 
 const getMovies = (req, res, next) => {
-  Movie.find({})
+  const { _id } = req.user;
+  Movie.find({ owner: _id })
     .then((movies) => res.status(OK_CODE).send(movies))
     .catch(next);
 };

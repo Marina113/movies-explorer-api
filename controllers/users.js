@@ -71,7 +71,9 @@ const updateProfile = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new ValidationError('Вы ввели неправильный логин или пароль.');
+        next(new ValidationError('Вы ввели неправильный логин или пароль.'));
+      } else if (err.code === 11000) {
+        next(new ConflictError('Пользователь с таким email уже существует'));
       } else {
         next(err);
       }
