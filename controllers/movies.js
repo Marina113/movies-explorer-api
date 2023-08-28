@@ -3,7 +3,7 @@ const NotFoundError = require('../errors/notFoundError');
 // eslint-disable-next-line no-unused-vars
 const CastError = require('../errors/castError');
 const ValidationError = require('../errors/validationError');
-const ForbiddenError = require('../errors/forbiddenError');
+// const ForbiddenError = require('../errors/forbiddenError');
 
 const { OK_CODE } = require('../utils/constants');
 
@@ -15,17 +15,24 @@ const getMovies = (req, res, next) => {
 };
 
 const delMoviesById = (req, res, next) => {
-  const userId = req.user._id;
-  Movie.findById(req.params._id)
-    .then((movies) => {
-      if (!movies) {
-        throw new NotFoundError('Страница по указанному маршруту не найдена');
-      }
-      if (movies.owner.toString() !== userId) {
-        throw new ForbiddenError('Нельзя удалять чужое видео!');
-      }
-      Movie.findByIdAndRemove(req.params._id).then(() => res.status(OK_CODE).send(movies));
+  // const userId = req.user._id;
+  // Movie.findById(req.params.id)
+  //   .then((movies) => {
+  //     if (!movies) {
+  //       throw new NotFoundError('Страница по указанному маршруту не найдена');
+  //     }
+  //     if (movies.owner.toString() !== userId) {
+  //       throw new ForbiddenError('Нельзя удалять чужое видео!');
+  //     }
+  // Movie.findByIdAndRemove(req.params._id).then(() => res.status(OK_CODE).send(movies));
+
+  // })
+  console.log(req.user._id);
+  Movie.findOneAndRemove({ movieId: req.params.movieId, owner: req.user._id })
+    .orFail(() => {
+      throw new NotFoundError('фильм не найден');
     })
+    .then((movie) => res.send({ data: movie }))
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(new ValidationError('Некорректный id'));
@@ -42,7 +49,7 @@ const createMovies = (req, res, next) => {
     year,
     description,
     image,
-    trailer,
+    trailerLink,
     nameRU,
     nameEN,
     thumbnail,
@@ -56,7 +63,7 @@ const createMovies = (req, res, next) => {
     year,
     description,
     image,
-    trailer,
+    trailerLink,
     nameRU,
     nameEN,
     thumbnail,
@@ -65,6 +72,7 @@ const createMovies = (req, res, next) => {
   })
     .then((movies) => res.status(OK_CODE).send(movies))
     .catch((err) => {
+      console.log(err.stack);
       if (err.name === 'ValidationError') {
         next(new ValidationError('Некорректные данные'));
       } else {

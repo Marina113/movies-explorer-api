@@ -5,22 +5,21 @@ const createUserValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(6),
+    password: Joi.string().required().min(4).max(12),
   }),
 });
 
 const loginValidation = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(6),
+    password: Joi.string().required().min(4).max(12),
   }),
 });
 
 const updateProfileValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
-    email: Joi.string().required().email(),
+    email: Joi.string().email(),
   }),
 });
 
@@ -42,7 +41,7 @@ const createMoviesValidation = celebrate({
 
 const delMoviesByIdValidation = celebrate({
   params: Joi.object().keys({
-    _id: Joi.string().required().length(24).hex(),
+    movieId: Joi.number().required(),
   }),
 });
 
